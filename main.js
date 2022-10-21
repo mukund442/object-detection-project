@@ -1,29 +1,41 @@
 function setup(){
-    canvas=createCanvas(640, 420);
+    canvas=createCanvas(380, 380);
     canvas.center();
 
-    objectDetector=ml5.objectDetector('cocossd', modelLoaded);
-    document.getElementById("ststus").innerHTML="Status : detecting objects";
-}
+    video=createCapture(VIDEO);
+    video.size(380, 380);
+    video.hide();
 
+    objectDetector=ml5.objectDetector('cocossd', modelLoaded);
+    document.getElementById("status").innerHTML="Status : obejct Detecting";
+}
+object=[];
+status="";
 img="";
 function preload(){
     img=loadImage('fruit_basket.jpg');
 }
 
 function draw(){
-    image(img, 0, 0, 640, 420);
-    fill("#00FFFF");
-    text("basket", 45, 75);
-    noFill();
-    stroke("#00FFFF");
-    rect(30, 60, 450, 350);
 
-    fill("#00FFFF");
-    text("apples", 45, 75);
-    noFill();
-    stroke("#00FFFF");
-    rect(30, 60, 450, 350);
+    image(video, 0, 0, 380, 380);
+    if(status!=""){
+        objectDetector.detect(video, gotResult);
+        r=random(255);
+        g=random(255);
+        b=random(255);
+
+        for(i=0; i<objects.lenght; i++){
+            document.getElementById("status").innerHTML="status : object Detected";
+            document.getElementById("number_of_objects").innerHTML="number of object detected are"+object.lenght;
+            fill(r, g, b);
+            percent=floor(objects[i].confidence*100);
+            text(objects[i].label+" "+ percent+"%",objects[i].x, object[i].y);
+            noFill();
+            stroke(r, g, b);
+            rect(object[i].x, object[i].y, object[i].width, object[i].height);
+        }
+    }
 }
 
 function modelLoaded(){
@@ -38,4 +50,9 @@ function gotResult(error, results){
     else{
         console.log(results);
     }
+}
+
+function start(){
+    objectDetector=ml5.objectDetector('cocossd', modelLoaded);
+    document.getElementById("status").innerHTML="status: Detecting Objects";
 }
